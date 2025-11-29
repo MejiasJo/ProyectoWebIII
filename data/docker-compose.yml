@@ -1,0 +1,40 @@
+services:
+  mariadb:
+    image: mariadb:latest
+    container_name: mariadbProject
+    restart: unless-stopped
+    ports:
+      - "${MARIADB_PORT}:3306"
+    environment:
+      MARIADB_ROOT_PASSWORD: "${MARIADB_ROOT_PASSWORD}"
+      MARIADB_DATABASE: "${MARIADB_DATABASE}"
+      MARIADB_USER: "${MARIADB_USER}"
+      MARIADB_PASSWORD: "${MARIADB_PASSWORD}"
+      TZ: "America/Costa_Rica"
+    volumes:
+      - mariadb_data:/db:/var/lib/mysql
+      - ./initdb:/docker-entrypoint-initdb.d
+
+    healthcheck:
+      test: ["CMD-SHELL", "healthcheck.sh --connect --innodb_initialized"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: phpmyadminProject
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    environment:
+      PMA_HOST: mariadb
+      PMA_PORT: 3306
+      PMA_ARBITRARY: 1
+    depends_on:
+      mariadb:
+        condition: service_healthy
+
+
+volumes:
+  mariadb_data:
