@@ -1,4 +1,5 @@
 import express from 'express';
+import usersRoutes from './routes/usersRoutes.js';
 import citaRoutes from './routes/citasRoute.js';  
 
 const app = express();
@@ -8,6 +9,7 @@ app.use(express.json());
 
 
 // Rutas
+app.use('/api/usuarios', usersRoutes);
 app.use('/api/citas', citaRoutes);
 
 // Iniciar el servidor
