@@ -2,6 +2,9 @@ import express from 'express';
 import usersRoutes from './routes/usersRoutes.js';
 import citaRoutes from './routes/citasRoute.js';  
 import historialRoutes from './routes/historialRoute.js';
+import animalsRoutes from './routes/animalsRoute.js';
+import pool from './services/db.js';
+
 
 const app = express();
 const PORT = 4000;
@@ -13,6 +16,7 @@ app.use(express.json());
 app.use('/api/usuarios', usersRoutes);
 app.use('/api/citas', citaRoutes);
 app.use('/api/historial', historialRoutes);
+app.use('/api/animales', animalsRoutes);
 
 // Iniciar el servidor
 (async () => {

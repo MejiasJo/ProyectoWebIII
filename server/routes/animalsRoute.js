@@ -1,0 +1,71 @@
+// routes/animalsRouter.js
+import express from 'express';
+import * as animalsService from '../services/animalsService.js';
+
+const router = express.Router();
+
+// Obtener todos los animales
+router.get('/', async (req, res) => {
+  try {
+    const animales = await animalsService.getAll();
+    res.json(animales);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error al obtener animales' });
+  }
+});
+
+// Obtener un animal por ID
+router.get('/:id', async (req, res) => {
+  try {
+    const animal = await animalsService.getById(req.params.id);
+    if (!animal)
+      return res.status(404).json({ error: 'Animal no encontrado' });
+
+    res.json(animal);
+  } catch (err) {
+    res.status(500).json({ error: 'Error al obtener animal' });
+  }
+});
+
+// Crear animal
+router.post('/', async (req, res) => {
+  try {
+    const nuevoAnimal = await animalsService.create(req.body);
+    res.status(201).json(nuevoAnimal);
+  } catch (err) {
+    if (err.message.includes('Faltan datos')) {
+      return res.status(400).json({ error: err.message });
+    }
+    console.error(err);
+    res.status(500).json({ error: 'Error al crear animal' });
+  }
+});
+
+// Actualizar animal
+router.put('/:id', async (req, res) => {
+  try {
+    const actualizado = await animalsService.update(req.params.id, req.body);
+    res.json(actualizado);
+  } catch (err) {
+    if (err.message === 'Animal not found' || err.message === 'No hay datos para actualizar') {
+      return res.status(400).json({ error: err.message });
+    }
+    res.status(500).json({ error: 'Error al actualizar animal' });
+  }
+});
+
+// Eliminar animal
+router.delete('/:id', async (req, res) => {
+  try {
+    const result = await animalsService.deleteById(req.params.id);
+    res.json(result);
+  } catch (err) {
+    if (err.message === 'Animal not found') {
+      return res.status(404).json({ error: err.message });
+    }
+    res.status(500).json({ error: 'Error al eliminar animal' });
+  }
+});
+
+export default router;
