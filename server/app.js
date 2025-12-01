@@ -1,6 +1,7 @@
 import express from 'express';
 import usersRoutes from './routes/usersRoutes.js';
 import citaRoutes from './routes/citasRoute.js';  
+import historialRoutes from './routes/historialRoute.js';
 
 const app = express();
 const PORT = 4000;
@@ -11,6 +12,7 @@ app.use(express.json());
 // Rutas
 app.use('/api/usuarios', usersRoutes);
 app.use('/api/citas', citaRoutes);
+app.use('/api/historial', historialRoutes);
 
 // Iniciar el servidor
 (async () => {
