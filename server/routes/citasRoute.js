@@ -1,9 +1,12 @@
 import express from 'express';
-import { getAll, create, update, deleteById } from '../services/citasService.js';
+import { getAll, create, update, deleteById, getById } from '../services/citasService.js';
 
 const router = express.Router();
 
 // Obtener todas las citas 
+
+
+
 router.get('/', async (req, res) => {
   try {
     const filtros = req.query; 
@@ -11,6 +14,16 @@ router.get('/', async (req, res) => {
     res.json(citas);
   } catch (error) {
     res.status(500).json({ message: 'Error al obtener las citas', error: error.message });
+  }
+});
+
+// Obtener una cita por su ID
+router.get('/id', async (req, res) => {
+  try {
+    const citas = await getById(req.params.id);
+    res.json(citas);
+  } catch (error) {
+    res.status(500).json({ message: 'Error al obtener las citas por Id', error: error.message });
   }
 });
 
