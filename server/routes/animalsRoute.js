@@ -1,6 +1,8 @@
 // routes/animalsRouter.js
 import express from 'express';
 import * as animalsService from '../services/animalsService.js';
+import { verifyToken } from '../middlewares/authMiddleware.js';
+import { allowRoles } from '../middlewares/roleMiddleware.js';
 
 const router = express.Router();
 
@@ -29,7 +31,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // Crear animal
-router.post('/', async (req, res) => {
+router.post('/',verifyToken, allowRoles('admin', 'veterianrio'), async (req, res) => {
   try {
     const nuevoAnimal = await animalsService.create(req.body);
     res.status(201).json(nuevoAnimal);
@@ -43,7 +45,7 @@ router.post('/', async (req, res) => {
 });
 
 // Actualizar animal
-router.put('/:id', async (req, res) => {
+router.put('/:id',verifyToken, allowRoles('admin', 'veterianrio'), async (req, res) => {
   try {
     const actualizado = await animalsService.update(req.params.id, req.body);
     res.json(actualizado);
@@ -56,7 +58,7 @@ router.put('/:id', async (req, res) => {
 });
 
 // Eliminar animal
-router.delete('/:id', async (req, res) => {
+router.delete('/:id',verifyToken, allowRoles('admin', 'veterianrio'), async (req, res) => {
   try {
     const result = await animalsService.deleteById(req.params.id);
     res.json(result);
