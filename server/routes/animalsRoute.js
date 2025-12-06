@@ -31,7 +31,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // Crear animal
-router.post('/',verifyToken, allowRoles('admin', 'veterianrio'), async (req, res) => {
+router.post('/',verifyToken, allowRoles('admin', 'veterinario'), async (req, res) => {
   try {
     const nuevoAnimal = await animalsService.create(req.body);
     res.status(201).json(nuevoAnimal);
@@ -45,7 +45,7 @@ router.post('/',verifyToken, allowRoles('admin', 'veterianrio'), async (req, res
 });
 
 // Actualizar animal
-router.put('/:id',verifyToken, allowRoles('admin', 'veterianrio'), async (req, res) => {
+router.put('/:id',verifyToken, allowRoles('admin', 'veterinario'), async (req, res) => {
   try {
     const actualizado = await animalsService.update(req.params.id, req.body);
     res.json(actualizado);
@@ -58,7 +58,7 @@ router.put('/:id',verifyToken, allowRoles('admin', 'veterianrio'), async (req, r
 });
 
 // Eliminar animal
-router.delete('/:id',verifyToken, allowRoles('admin', 'veterianrio'), async (req, res) => {
+router.delete('/:id',verifyToken, allowRoles('admin', 'veterinario'), async (req, res) => {
   try {
     const result = await animalsService.deleteById(req.params.id);
     res.json(result);
