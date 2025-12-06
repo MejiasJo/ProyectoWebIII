@@ -1,9 +1,11 @@
 import express from 'express';
 import * as usersService from '../services/usersService.js';
+import { verifyToken } from './middlewares/authMiddleware.js';
+import { allowRoles } from './middlewares/roleMiddleware.js';
 
 const router = express.Router();
 
-router.get('/', async (req, res) => {
+router.get('/', verifyToken, allowRoles('admin'), async (req, res) => {
   try {
     const users = await usersService.getAll();
     res.json(users);
@@ -23,7 +25,7 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-router.post('/', async (req, res) => {
+router.post('/', verifyToken, allowRoles('admin'), async (req, res) => {
   try {
     const newUser = await usersService.create(req.body);
     res.status(201).json(newUser);
@@ -50,7 +52,7 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', verifyToken, allowRoles('admin'), async (req, res) => {
   try {
     const result = await usersService.deleteById(req.params.id);
     res.json(result);
