@@ -105,7 +105,6 @@ export const update = async (idAnimal, animal) => {
     `UPDATE Animal SET ${fields.join(', ')} WHERE idAnimal = ?`,
     values
   );
-
   if (result.affectedRows === 0) {
     throw new Error('Error al actualizar animal');
   }
