@@ -1,8 +1,7 @@
 import express from 'express';
 import { getReporteHistorial } from '../services/reporteService.js';
-import { verifyToken } from '../middlewares/verifyToken.js';
-import { allowRoles } from '../middlewares/allowRoles.js';
-import { logEvent } from '../middlewares/logEvent.js';
+import { verifyToken } from '../middlewares/authMiddleware.js';
+import { allowRoles } from '../middlewares/roleMiddleware.js';
 
 const router = express.Router();
 
