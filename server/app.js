@@ -3,6 +3,7 @@ import usersRoutes from './routes/usersRoutes.js';
 import citaRoutes from './routes/citasRoute.js';  
 import historialRoutes from './routes/historialRoute.js';
 import animalsRoutes from './routes/animalsRoute.js';
+import tratamientoRoutes from './routes/tratamientoRoute.js';
 import pool from './services/db.js';
 
 
@@ -17,6 +18,7 @@ app.use('/api/usuarios', usersRoutes);
 app.use('/api/citas', citaRoutes);
 app.use('/api/historial', historialRoutes);
 app.use('/api/animales', animalsRoutes);
+app.use('/api/tratamientos', tratamientoRoutes);
 
 // Iniciar el servidor
 (async () => {
