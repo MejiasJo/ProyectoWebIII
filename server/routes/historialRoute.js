@@ -1,4 +1,6 @@
 import express from 'express';
+import { verifyToken } from '../middlewares/authMiddleware.js';
+import { allowRoles } from '../middlewares/roleMiddleware.js';
 import { getAll, create, update, deleteById } from '../services/historialService.js';
 
 const router = express.Router();

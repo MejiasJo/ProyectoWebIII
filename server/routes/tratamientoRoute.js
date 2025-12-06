@@ -1,5 +1,7 @@
 import express from 'express';
 import * as tratamientoService from '../services/tratamientoService.js';
+import { verifyToken } from '../middlewares/authMiddleware.js';
+import { allowRoles } from '../middlewares/roleMiddleware.js';
 
 const router = express.Router();
 
