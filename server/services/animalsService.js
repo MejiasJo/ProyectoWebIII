@@ -2,7 +2,15 @@
 import pool from './db.js';
 
 const estadosValidos = ['sano', 'tratamiento', 'enfermo'];
-const sexosValidos = ['macho', 'hembra'];
+const sexosValidos = ['m', 'f', 'macho', 'hembra'];
+
+const normalizarSexo = (sexo) => {
+    if (!sexo) return null;
+    const s = sexo.trim().toLowerCase();
+    if (s === 'm' || s === 'macho') return 'M';
+    if (s === 'f' || s === 'hembra') return 'F';
+    throw new Error('Sexo no válido. Use M, F, macho o hembra.');
+};
 
 export const getAll = async () => {
   const [rows] = await pool.execute(`
@@ -26,6 +34,7 @@ export const create = async (animal) => {
   }
 
   // Validación sexo
+   const sexoNormalizado = normalizarSexo(sexo);
   if (!sexosValidos.includes(sexo.trim().toLowerCase())) {
     throw new Error('Sexo no válido');
   }
@@ -46,9 +55,7 @@ export const create = async (animal) => {
 
   const [result] = await pool.execute(`
     INSERT INTO Animal (idCliente, nombre, sexo, especie, peso, raza, estado)
-    VALUES (?, ?, ?, ?, ?, ?, ?) `, [idCliente, nombre, sexo.trim().toLowerCase(), especie, peso, raza,
-      estadoNormalizado
-  ]);
+    VALUES (?, ?, ?, ?, ?, ?, ?) `, [idCliente, nombre, sexoNormalizado,, especie, peso, raza, estadoNormalizado]);
   return getById(result.insertId);
 };
 
@@ -62,12 +69,11 @@ export const update = async (idAnimal, animal) => {
   if (idCliente !== undefined) { fields.push('idCliente = ?'); values.push(idCliente); }
   if (nombre !== undefined)   { fields.push('nombre = ?'); values.push(nombre); }
 
+  
   if (sexo !== undefined) {
-    if (!sexosValidos.includes(sexo.trim().toLowerCase())) {
-      throw new Error('Sexo no válido');
-    }
+    const sexoNormalizado = normalizarSexo(sexo);
     fields.push('sexo = ?');
-    values.push(sexo.trim().toLowerCase());
+    values.push(sexoNormalizado);
   }
 
   if (especie !== undefined)  { fields.push('especie = ?'); values.push(especie); }
