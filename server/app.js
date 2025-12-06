@@ -4,6 +4,7 @@ import citaRoutes from './routes/citasRoute.js';
 import historialRoutes from './routes/historialRoute.js';
 import animalsRoutes from './routes/animalsRoute.js';
 import tratamientoRoutes from './routes/tratamientoRoute.js';
+import authRoute from './routes/authRoute.js';
 import pool from './services/db.js';
 
 
@@ -14,6 +15,7 @@ app.use(express.json());
 
 
 // Rutas
+app.use('/api/auth', authRoute);
 app.use('/api/usuarios', usersRoutes);
 app.use('/api/citas', citaRoutes);
 app.use('/api/historial', historialRoutes);
