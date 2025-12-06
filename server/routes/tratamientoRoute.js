@@ -23,7 +23,7 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-router.post('/', async (req, res) => {
+router.post('/', verifyToken, allowRoles('veterinario'), async (req, res) => {
   try {
     const newTreatment = await tratamientoService.create(req.body);
     res.status(201).json(newTreatment);
@@ -37,7 +37,7 @@ router.post('/', async (req, res) => {
   }
 });
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', verifyToken, allowRoles('veterinario'), async (req, res) => {
   try {
     const updated = await tratamientoService.update(req.params.id, req.body);
     res.json(updated);
@@ -50,7 +50,7 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', verifyToken, allowRoles('veterinario'), async (req, res) => {
   try {
     const result = await tratamientoService.deleteById(req.params.id);
     res.json(result);
