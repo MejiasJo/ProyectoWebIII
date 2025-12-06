@@ -7,7 +7,7 @@ import { allowRoles } from '../middlewares/roleMiddleware.js';
 const router = express.Router();
 
 // Obtener todos los animales
-router.get('/', async (req, res) => {
+router.get('/',verifyToken, allowRoles('admin', 'veterinario','cliente'), async (req, res) => {
   try {
     const animales = await animalsService.getAll();
     res.json(animales);
@@ -18,7 +18,7 @@ router.get('/', async (req, res) => {
 });
 
 // Obtener un animal por ID
-router.get('/:id', async (req, res) => {
+router.get('/:id',verifyToken, allowRoles('admin', 'veterinario','cliente'), async (req, res) => {
   try {
     const animal = await animalsService.getById(req.params.id);
     if (!animal)
