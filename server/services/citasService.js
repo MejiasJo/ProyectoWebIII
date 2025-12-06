@@ -17,6 +17,11 @@ export const create = async ({ idAnimal, idVeterinario, fechaCita, motivo }) => 
   return newCita[0];
 };
 
+// Obtener una cita por su ID
+export const getById = async (id) => {
+    const [rows] = await pool.execute('SELECT idAnimal, idVeterinario, fechaCita, motivo FROM Users WHERE id = ?', [id]);
+  return rows[0];
+}
 
 // Da todas las citas (por animal, veterinario y fechaCita)
 export const getAll = async (filters = {}) => {
@@ -49,7 +54,6 @@ export const getAll = async (filters = {}) => {
   const [rows] = await pool.execute(query, params);
   return rows;
 };
-
 
 // Actualiza una cita
 export const update = async (idCita, updates) => {
