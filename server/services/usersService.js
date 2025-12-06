@@ -50,7 +50,7 @@ export const update = async (id, user) => {
 };
 
 export const validateCredentials = async (username, password) => {
-  const [rows] = await pool.execute('SELECT * FROM users WHERE username = ?', [username]);
+  const [rows] = await pool.execute('SELECT * FROM Users WHERE username = ?', [username]);
   if (rows.length === 0) return null;
   const user = rows[0];
   const valid = await bcrypt.compare(password, user.password);
@@ -61,7 +61,7 @@ export const validateCredentials = async (username, password) => {
 };
 
 export const deleteById = async (id) => {
-  const [result] = await pool.execute('DELETE FROM users WHERE id = ?', [id]);
+  const [result] = await pool.execute('DELETE FROM Users WHERE id = ?', [id]);
   if (result.affectedRows === 0) throw new Error('User not found');
   return { message: 'User deleted successfully' };
 };
