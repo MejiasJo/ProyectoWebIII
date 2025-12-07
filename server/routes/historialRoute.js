@@ -5,13 +5,26 @@ import { getAll, create, update, deleteById } from '../services/historialService
 
 const router = express.Router();
 
-router.get('/', async (req, res) => {
+router.get('/', verifyToken, async (req, res) => {
   try {
     const filtros = req.query;
-    const historial = await getAll(filtros);
+    const { role, id } = req.user;
+    let historial;
+    if (role === 'admin' || role === 'veterinario') {
+      historial = await getAll(filtros, req.user);
+    }
+    if (role === 'cliente') {
+      historial = await getAll(filtros, req.user);
+    }
+
     res.json(historial);
+
   } catch (error) {
-    res.status(500).json({ message: 'Error al obtener el historial médico', error: error.message });
+    console.error('Error al obtener el historial médico:', error);
+    res.status(500).json({
+      message: 'Error al obtener el historial médico',
+      error: error.message
+    });
   }
 });
 

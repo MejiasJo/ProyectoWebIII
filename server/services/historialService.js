@@ -19,36 +19,43 @@ export const create = async ({ idVeterinario, idAnimal, idTratamiento, fechaDiag
   return newRegistro[0];
 };
 
-export const getAll = async (filters = {}) => {
+export const getAll = async (filters = {}, user) => {
   const { idAnimal, idVeterinario, fechaDiagnostico, idTratamiento } = filters;
-  let query = 'SELECT * FROM HistorialMedico';
-  const where = [];
+  let where = [];
   const params = [];
+  let query = 'FROM HistorialMedico h ';
 
-  if (idAnimal !== undefined) {
-    where.push('idAnimal = ?');
+  if (user.role === 'cliente') {
+    query += 'JOIN Animal a ON h.idAnimal = a.idAnimal ';
+    where.push('a.idCliente = ?');
+    params.push(user.id);
+  }
+  if (idAnimal) {
+    where.push('h.idAnimal = ?');
     params.push(idAnimal);
   }
-  if (idVeterinario !== undefined) {
-    where.push('idVeterinario = ?');
+  if (idVeterinario) {
+    where.push('h.idVeterinario = ?');
     params.push(idVeterinario);
   }
-  if (fechaDiagnostico !== undefined) {
-    where.push('fechaDiagnostico = ?');
+  if (fechaDiagnostico) {
+    where.push('h.fechaDiagnostico = ?');
     params.push(fechaDiagnostico);
   }
-  if (idTratamiento !== undefined) {
-    where.push('idTratamiento = ?');
+  if (idTratamiento) {
+    where.push('h.idTratamiento = ?');
     params.push(idTratamiento);
   }
 
   if (where.length > 0) {
-    query += ' WHERE ' + where.join(' AND ');
+    query += 'WHERE ' + where.join(' AND ');
   }
 
-  query += ' ORDER BY fechaDiagnostico DESC';
+  query += ' ORDER BY h.fechaDiagnostico DESC';
 
-  const [rows] = await pool.execute(query, params);
+  const sql = `SELECT h.* ${query}`;
+
+  const [rows] = await pool.execute(sql, params);
   return rows;
 };
 
