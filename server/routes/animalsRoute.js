@@ -18,7 +18,7 @@ router.get('/',verifyToken, allowRoles('admin', 'veterinario','cliente'), async 
 });
 
 // Obtener animales con filtros dinámicos 
-router.get("/filtros", async (req, res) => {
+router.get("/filtros",verifyToken, allowRoles('admin', 'veterinario'),async (req, res) => {
   try {
     const filters = req.query;  
     const animales = await animalsService.getDynamic(filters);  
