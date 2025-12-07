@@ -12,10 +12,19 @@ const normalizarSexo = (sexo) => {
     throw new Error('Sexo no válido. Use M, F, macho o hembra.');
 };
 
-export const getAll = async () => {
-  const [rows] = await pool.execute(`
-    SELECT a.idAnimal, a.idCliente, u.name AS nombreCliente, a.nombre, a.sexo, a.especie, a.peso, a.raza, a.estado
-    FROM Animal a LEFT JOIN Users u ON a.idCliente = u.id ORDER BY a.idAnimal DESC`);
+export const getAll = async (filters = {}) => {
+  const where = [];
+  const values = [];
+  let join = '';  
+
+  if (filters.userId) {
+    join = ' LEFT JOIN Animal a ON t.idAnimal = a.idAnimal '; 
+    where.push('a.idCliente = ?'); 
+    values.push(filters.userId);    
+  }
+  
+  const sql = `SELECT t.* FROM Animal t  ${join}  ${where.length ? ' WHERE ' + where.join(' AND ') : ''}  ORDER BY t.idCliente DESC`;
+  const [rows] = await pool.execute(sql, values);
   return rows;
 };
 
