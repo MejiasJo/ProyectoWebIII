@@ -7,7 +7,7 @@ import { allowRoles } from '../middlewares/roleMiddleware.js';
 const router = express.Router();
 
 // Obtener todos los animales
-router.get('/', async (req, res) => {
+router.get('/',verifyToken, allowRoles('admin', 'veterinario','cliente'), async (req, res) => {
   try {
     const animales = await animalsService.getAll();
     res.json(animales);
@@ -17,8 +17,20 @@ router.get('/', async (req, res) => {
   }
 });
 
+// Obtener animales con filtros dinámicos 
+router.get("/filtros",verifyToken, allowRoles('admin', 'veterinario'),async (req, res) => {
+  try {
+    const filters = req.query;  
+    const animales = await animalsService.getDynamic(filters);  
+    res.json(animales);  
+  } catch (error) {
+    console.error("Error obteniendo animales:", error);
+    res.status(500).json({ error: "Error al obtener los animales" });
+  }
+});
+
 // Obtener un animal por ID
-router.get('/:id', async (req, res) => {
+router.get('/:id',verifyToken, allowRoles('admin', 'veterinario','cliente'), async (req, res) => {
   try {
     const animal = await animalsService.getById(req.params.id);
     if (!animal)

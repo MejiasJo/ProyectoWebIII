@@ -1,9 +1,23 @@
 import pool from './db.js';
 import bcrypt from 'bcrypt';
 
-export const getAll = async () => {
-    const [rows] = await pool.execute('SELECT id, name, email, username, role, telefono, direccion FROM Users ORDER BY id DESC');
+export const getAll = async (filters) => {
+  const where = [];
+  const values = [];
+  if(filters && filters.role) {
+    where.push('role = ?');
+    values.push(filters.role);
+  }
+
+  if(filters && filters.email){
+    where.push('email = ?');
+    values.push(filters.email);
+  }
+  
+  const query = `SELECT id, name, email, username, role, telefono, direccion FROM Users${where.length ? ' WHERE ' + where.join(' AND ') : ''} ORDER BY id DESC`;
+  const [rows] = await pool.execute(query, values);
   return rows;
+  
 };
 
 export const getById = async (id) => {
