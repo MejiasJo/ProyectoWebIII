@@ -17,6 +17,18 @@ router.get('/',verifyToken, allowRoles('admin', 'veterinario','cliente'), async 
   }
 });
 
+// Obtener animales con filtros dinámicos 
+router.get("/filtros", async (req, res) => {
+  try {
+    const filters = req.query;  
+    const animales = await animalsService.getDynamic(filters);  
+    res.json(animales);  
+  } catch (error) {
+    console.error("Error obteniendo animales:", error);
+    res.status(500).json({ error: "Error al obtener los animales" });
+  }
+});
+
 // Obtener un animal por ID
 router.get('/:id',verifyToken, allowRoles('admin', 'veterinario','cliente'), async (req, res) => {
   try {
