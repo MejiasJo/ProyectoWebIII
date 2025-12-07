@@ -15,7 +15,7 @@ router.get('/', verifyToken, allowRoles('admin'), async (req, res) => {
   }
 });
 
-router.get('/:id', async (req, res) => {
+router.get('/:id', verifyToken, async (req, res) => {
   try {
     const user = await usersService.getById(req.params.id);
     if (!user) return res.status(404).json({ error: 'Usuario no encontrado' });
@@ -39,7 +39,7 @@ router.post('/', verifyToken, allowRoles('admin'), async (req, res) => {
   }
 });
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', verifyToken, async (req, res) => {
   try {
     const updated = await usersService.update(req.params.id, req.body);
     res.json(updated);

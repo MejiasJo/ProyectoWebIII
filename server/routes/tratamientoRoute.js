@@ -22,7 +22,7 @@ router.get('/', verifyToken, async (req, res) => {
   }
 });
 
-router.get('/:id', async (req, res) => {
+router.get('/:id', verifyToken, async (req, res) => {
   try {
     const treatment = await tratamientoService.getById(req.params.id);
     if (!treatment) return res.status(404).json({ error: 'Tratamiento no encontrado' });
