@@ -26,6 +26,48 @@ export const getById = async (idAnimal) => {
   return rows[0];
 };
 
+export const getDynamic = async (filters = {}) => {
+  const where = [];
+  const values = [];
+
+   // Filtrar por especie
+  if (filters.especie) {
+    where.push("LOWER(a.especie) = ?");
+    values.push(filters.especie.trim().toLowerCase());
+  }
+
+  // Filtrar por estado (sano, enfermo, tratamiento)
+  if (filters.estado) {
+    where.push("LOWER(a.estado) = ?");
+    values.push(filters.estado.trim().toLowerCase());
+  }
+
+  // Filtrar por sexo (M/F)
+  if (filters.sexo) {
+    where.push("a.sexo = ?");
+    values.push(filters.sexo.toUpperCase());
+  }
+
+  // Filtrar por cliente
+  if (filters.idCliente) {
+    where.push("a.idCliente = ?");
+    values.push(filters.idCliente);
+  }
+
+  const query = `
+    SELECT a.idAnimal, a.idCliente, u.name AS nombreCliente,
+           a.nombre, a.sexo, a.especie, a.peso, a.raza, a.estado
+    FROM Animal a
+    LEFT JOIN Users u ON a.idCliente = u.id
+    ${where.length ? "WHERE " + where.join(" AND ") : ""}
+    ORDER BY a.idAnimal DESC
+  `;
+
+  const [rows] = await pool.execute(query, values);
+  return rows;
+};
+
+
 export const create = async (animal) => {
   const { idCliente, nombre, sexo, especie, peso, raza, estado } = animal;
 
