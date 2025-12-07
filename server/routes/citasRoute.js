@@ -17,7 +17,7 @@ router.get('/', async (req, res) => {
 });
 
 // Obtener una cita por su ID
-router.get('/id', async (req, res) => {
+router.get('/:id', async (req, res) => {
   try {
     const citas = await getById(req.params.id);
     res.json(citas);

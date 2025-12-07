@@ -19,7 +19,7 @@ export const create = async ({ idAnimal, idVeterinario, fechaCita, motivo }) => 
 
 // Obtener una cita por su ID
 export const getById = async (id) => {
-    const [rows] = await pool.execute('SELECT idAnimal, idVeterinario, fechaCita, motivo FROM Users WHERE id = ?', [id]);
+    const [rows] = await pool.execute('SELECT idAnimal, idVeterinario, fechaCita, motivo FROM Cita WHERE idCita= ?', [id]);
   return rows[0];
 }
 
