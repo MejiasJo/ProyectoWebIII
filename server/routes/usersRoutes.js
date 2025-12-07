@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.get('/', verifyToken, allowRoles('admin'), async (req, res) => {
   try {
-    const users = await usersService.getAll();
+    const users = await usersService.getAll(req.query);
     res.json(users);
   } catch (err) {
     console.error(err);
