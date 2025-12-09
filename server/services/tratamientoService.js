@@ -1,22 +1,32 @@
 import pool from './db.js';
 
-export const getAll = async () => {
-    const [rows] = await pool.execute('SELECT idTratamiento, idAnimal, idVeterinario, tratamiento, fechaInicio, fechaFin, dosis, instrucciones FROM Tratamiento ORDER BY id DESC');
+export const getAll = async (filters) => {
+  const where = [];
+  const values = [];
+  let join = '';
+
+  if (filters && filters.userId) {
+    join = ' JOIN Animal a ON t.idAnimal = a.idAnimal ';
+    where.push('a.idCliente = ?');
+    values.push(filters.userId);
+  }
+  const sql = `SELECT t.* FROM Tratamiento t ${join}${where.length ? ' WHERE ' + where.join(' AND ') : ''} ORDER BY t.idTratamiento DESC`;
+  const [rows] = await pool.execute(sql, values);
   return rows;
 };
 
 export const getById = async (id) => {
-    const [rows] = await pool.execute('SELECT idTratamiento, idAnimal, idVeterinario, tratamiento, fechaInicio, fechaFin, dosis, instrucciones FROM Tratamiento WHERE idTratamiento = ?', [id]);
+  const [rows] = await pool.execute('SELECT idTratamiento, idAnimal, idVeterinario, tratamiento, fechaInicio, fechaFin, dosis, instrucciones FROM Tratamiento WHERE idTratamiento = ?', [id]);
   return rows[0];
 }
 
 export const create = async (treatment) => {
-    const {idAnimal, idVeterinario, tratamiento, fechaInicio, fechaFin, dosis, instrucciones} = treatment;
-    if (!idAnimal || !idVeterinario || !tratamiento || !fechaInicio || !fechaFin || !dosis || !instrucciones){
-        throw new Error('Faltan datos del Tratamiento');
-    }
+  const { idAnimal, idVeterinario, tratamiento, fechaInicio, fechaFin, dosis, instrucciones } = treatment;
+  if (!idAnimal || !idVeterinario || !tratamiento || !fechaInicio || !fechaFin || !dosis || !instrucciones) {
+    throw new Error('Faltan datos del Tratamiento');
+  }
 
-    const [result] = await pool.execute(
+  const [result] = await pool.execute(
     'INSERT INTO Tratamiento (idAnimal, idVeterinario, tratamiento, fechaInicio, fechaFin, dosis, instrucciones) VALUES (?, ?, ?, ?, ?, ?, ?)',
     [idAnimal, idVeterinario, tratamiento, fechaInicio, fechaFin, dosis, instrucciones]
   );

@@ -5,17 +5,24 @@ import { allowRoles } from '../middlewares/roleMiddleware.js';
 
 const router = express.Router();
 
-router.get('/', async (req, res) => {
+router.get('/', verifyToken, async (req, res) => {
   try {
-    const treatment = await tratamientoService.getAll();
-    res.json(treatment);
+    const { role, id } = req.user;
+    if (role === 'admin' || role === 'veterinario') {
+      const treatment = await tratamientoService.getAll();
+      res.json(treatment);
+    }
+    if (role === 'cliente') {
+      const treatments = await tratamientoService.getAll({ userId: id });
+      res.json(treatments);
+    }
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Error al obtener tratamientos' });
   }
 });
 
-router.get('/:id', async (req, res) => {
+router.get('/:id', verifyToken, async (req, res) => {
   try {
     const treatment = await tratamientoService.getById(req.params.id);
     if (!treatment) return res.status(404).json({ error: 'Tratamiento no encontrado' });

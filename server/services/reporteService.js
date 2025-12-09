@@ -7,18 +7,21 @@ export const getReporteHistorial = async () => {
         a.nombre AS nombreAnimal,
         a.especie,
         a.raza,
+        hm.idDiagnosticoHistorial,
         hm.diagnostico,
         hm.fechaDiagnostico,
+        t.idTratamiento,
         t.tratamiento,
         t.fechaInicio,
         t.fechaFin,
         t.dosis AS dosisTratamiento,
+        t.instrucciones,
         u.name AS veterinario
-    FROM Animal a
-    LEFT JOIN HistorialMedico hm ON a.idAnimal = hm.idAnimal
-    LEFT JOIN Tratamiento t ON a.idAnimal = t.idAnimal
+    FROM HistorialMedico hm
+    JOIN Animal a ON hm.idAnimal = a.idAnimal
+    LEFT JOIN Tratamiento t ON hm.idTratamiento = t.idTratamiento
     LEFT JOIN Users u ON hm.idVeterinario = u.id
-    ORDER BY a.idAnimal, hm.fechaDiagnostico;
+    ORDER BY a.idAnimal, hm.fechaDiagnostico, t.fechaInicio;
   `;
 
   const [rows] = await pool.query(query);

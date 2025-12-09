@@ -1,15 +1,14 @@
 import pool from './db.js';
 
-export const create = async ({ idVeterinario, idAnimal, fechaDiagnostico, diagnostico, medicamentos, dosis, cantidad }) => {
-  if (!idVeterinario || !idAnimal || !fechaDiagnostico) {
+export const create = async ({ idVeterinario, idAnimal, idTratamiento, fechaDiagnostico, diagnostico }) => {
+  if (!idVeterinario || !idAnimal || !fechaDiagnostico || !idTratamiento) {
     throw new Error('Faltan campos requeridos');
   }
-
   const [result] = await pool.execute(
     `INSERT INTO HistorialMedico 
-    (idVeterinario, idAnimal, fechaDiagnostico, diagnostico, medicamentos, dosis, cantidad)
-    VALUES (?, ?, ?, ?, ?, ?, ?)`,
-    [idVeterinario, idAnimal, fechaDiagnostico, diagnostico, medicamentos, dosis, cantidad]
+    (idVeterinario, idAnimal, fechaDiagnostico, diagnostico, idTratamiento)
+    VALUES (?, ?, ?, ?, ?)`,
+    [idVeterinario, idAnimal, fechaDiagnostico, diagnostico, idTratamiento]
   );
 
   const [newRegistro] = await pool.execute(
@@ -20,75 +19,73 @@ export const create = async ({ idVeterinario, idAnimal, fechaDiagnostico, diagno
   return newRegistro[0];
 };
 
-export const getAll = async (filters = {}) => {
-  const { idAnimal, idVeterinario, fechaDiagnostico } = filters;
-  let query = 'SELECT * FROM HistorialMedico';
-  const where = [];
+export const getAll = async (filters = {}, user) => {
+  const { idAnimal, idVeterinario, fechaDiagnostico, idTratamiento } = filters;
+  let where = [];
   const params = [];
+  let query = 'FROM HistorialMedico h ';
 
-  if (idAnimal !== undefined) {
-    where.push('idAnimal = ?');
+  if (user.role === 'cliente') {
+    query += 'JOIN Animal a ON h.idAnimal = a.idAnimal ';
+    where.push('a.idCliente = ?');
+    params.push(user.id);
+  }
+  if (idAnimal) {
+    where.push('h.idAnimal = ?');
     params.push(idAnimal);
   }
-  if (idVeterinario !== undefined) {
-    where.push('idVeterinario = ?');
+  if (idVeterinario) {
+    where.push('h.idVeterinario = ?');
     params.push(idVeterinario);
   }
-  if (fechaDiagnostico !== undefined) {
-    where.push('fechaDiagnostico = ?');
+  if (fechaDiagnostico) {
+    where.push('h.fechaDiagnostico = ?');
     params.push(fechaDiagnostico);
+  }
+  if (idTratamiento) {
+    where.push('h.idTratamiento = ?');
+    params.push(idTratamiento);
   }
 
   if (where.length > 0) {
-    query += ' WHERE ' + where.join(' AND ');
+    query += 'WHERE ' + where.join(' AND ');
   }
 
-  query += ' ORDER BY fechaDiagnostico DESC';
+  query += ' ORDER BY h.fechaDiagnostico DESC';
 
-  const [rows] = await pool.execute(query, params);
+  const sql = `SELECT h.* ${query}`;
+
+  const [rows] = await pool.execute(sql, params);
   return rows;
 };
 
+
 export const update = async (idDiagnosticoHistorial, updates) => {
-  const { idVeterinario, idAnimal, fechaDiagnostico, diagnostico, medicamentos, dosis, cantidad } = updates;
+  const { diagnostico, fechaDiagnostico } = updates;
+
+  if (!diagnostico && !fechaDiagnostico) {
+    throw new Error('Se debe proporcionar al menos un campo para actualizar (diagnóstico o fecha)');
+  }
 
   let query = 'UPDATE HistorialMedico SET ';
   const params = [];
 
-  if (idVeterinario !== undefined) {
-    query += 'idVeterinario = ?, ';
-    params.push(idVeterinario);
-  }
-  if (idAnimal !== undefined) {
-    query += 'idAnimal = ?, ';
-    params.push(idAnimal);
+  if (diagnostico !== undefined) {
+    query += 'diagnostico = ?, ';
+    params.push(diagnostico);
   }
   if (fechaDiagnostico !== undefined) {
     query += 'fechaDiagnostico = ?, ';
     params.push(fechaDiagnostico);
   }
-  if (diagnostico !== undefined) {
-    query += 'diagnostico = ?, ';
-    params.push(diagnostico);
-  }
-  if (medicamentos !== undefined) {
-    query += 'medicamentos = ?, ';
-    params.push(medicamentos);
-  }
-  if (dosis !== undefined) {
-    query += 'dosis = ?, ';
-    params.push(dosis);
-  }
-  if (cantidad !== undefined) {
-    query += 'cantidad = ?, ';
-    params.push(cantidad);
-  }
 
   query = query.slice(0, -2);
+  
   query += ' WHERE idDiagnosticoHistorial = ?';
   params.push(idDiagnosticoHistorial);
 
   const [result] = await pool.execute(query, params);
+
   if (result.affectedRows === 0) {
     throw new Error('Diagnóstico no encontrado');
   }
@@ -100,6 +97,7 @@ export const update = async (idDiagnosticoHistorial, updates) => {
 
   return updated[0];
 };
+
 
 export const deleteById = async (idDiagnosticoHistorial) => {
   const [result] = await pool.execute(
