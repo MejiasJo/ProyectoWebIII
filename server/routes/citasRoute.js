@@ -27,7 +27,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // Crear una nueva cita
-router.post('/', verifyToken, allowRoles('veterinario'), async (req, res ) => {
+router.post('/', verifyToken, allowRoles('veterinario', 'admin'), async (req, res ) => {
   try {
     const nuevaCita = await create(req.body);
     res.status(201).json(nuevaCita);
@@ -37,7 +37,7 @@ router.post('/', verifyToken, allowRoles('veterinario'), async (req, res ) => {
 });
 
 // Actualizar una cita existente
-router.put('/:id', verifyToken, allowRoles('veterinario'), async (req, res) => {
+router.put('/:id', verifyToken, allowRoles('veterinario', 'admin'), async (req, res) => {
   try {
     const citaActualizada = await update(req.params.id, req.body);
     res.json(citaActualizada);
@@ -47,7 +47,7 @@ router.put('/:id', verifyToken, allowRoles('veterinario'), async (req, res) => {
 });
 
 // Eliminar una cita por su ID
-router.delete('/:id', verifyToken, allowRoles('veterinario'), async (req, res) => {
+router.delete('/:id', verifyToken, allowRoles('veterinario', 'admin'), async (req, res) => {
   try {
     const result = await deleteById(req.params.id);
     res.json(result);
