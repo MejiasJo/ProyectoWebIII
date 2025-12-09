@@ -106,7 +106,7 @@ export const create = async (animal) => {
 
   const [result] = await pool.execute(`
     INSERT INTO Animal (idCliente, nombre, sexo, especie, peso, raza, estado)
-    VALUES (?, ?, ?, ?, ?, ?, ?) `, [idCliente, nombre, sexoNormalizado,, especie, peso, raza, estadoNormalizado]);
+    VALUES (?, ?, ?, ?, ?, ?, ?) `, [idCliente, nombre, sexoNormalizado, especie, peso, raza, estadoNormalizado]);
   return getById(result.insertId);
 };
 
