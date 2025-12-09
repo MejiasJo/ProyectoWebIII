@@ -80,7 +80,7 @@ router.put('/:id',verifyToken, allowRoles('admin', 'veterinario'), async (req, r
 });
 
 // Eliminar animal
-router.delete('/:id',verifyToken, allowRoles('admin', 'veterinario'), async (req, res) => {
+router.delete('/:id',verifyToken, allowRoles('veterinario'), async (req, res) => {
   try {
     const result = await animalsService.deleteById(req.params.id);
     res.json(result);
