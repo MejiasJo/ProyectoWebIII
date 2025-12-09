@@ -1,5 +1,7 @@
 import express from 'express';
-import { getAll, create, update, deleteById } from '../services/citasService.js';
+import { getAll, create, update, deleteById, getById } from '../services/citasService.js';
+import { verifyToken } from '../middlewares/authMiddleware.js';
+import { allowRoles } from '../middlewares/roleMiddleware.js';
 
 const router = express.Router();
 
@@ -14,8 +16,18 @@ router.get('/', async (req, res) => {
   }
 });
 
+// Obtener una cita por su ID
+router.get('/:id', async (req, res) => {
+  try {
+    const citas = await getById(req.params.id);
+    res.json(citas);
+  } catch (error) {
+    res.status(500).json({ message: 'Error al obtener las citas por Id', error: error.message });
+  }
+});
+
 // Crear una nueva cita
-router.post('/', async (req, res) => {
+router.post('/', verifyToken, allowRoles('veterinario', 'admin'), async (req, res ) => {
   try {
     const nuevaCita = await create(req.body);
     res.status(201).json(nuevaCita);
@@ -25,7 +37,7 @@ router.post('/', async (req, res) => {
 });
 
 // Actualizar una cita existente
-router.put('/:id', async (req, res) => {
+router.put('/:id', verifyToken, allowRoles('veterinario', 'admin'), async (req, res) => {
   try {
     const citaActualizada = await update(req.params.id, req.body);
     res.json(citaActualizada);
@@ -35,7 +47,7 @@ router.put('/:id', async (req, res) => {
 });
 
 // Eliminar una cita por su ID
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', verifyToken, allowRoles('veterinario', 'admin'), async (req, res) => {
   try {
     const result = await deleteById(req.params.id);
     res.json(result);
@@ -45,3 +57,5 @@ router.delete('/:id', async (req, res) => {
 });
 
 export default router;
+
+

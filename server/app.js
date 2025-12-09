@@ -1,5 +1,13 @@
 import express from 'express';
+import usersRoutes from './routes/usersRoutes.js';
 import citaRoutes from './routes/citasRoute.js';  
+import historialRoutes from './routes/historialRoute.js';
+import animalsRoutes from './routes/animalsRoute.js';
+import tratamientoRoutes from './routes/tratamientoRoute.js';
+import reporteRoutes from './routes/reporteRoute.js';
+import authRoute from './routes/authRoute.js';
+import pool from './services/db.js';
+
 
 const app = express();
 const PORT = 4000;
@@ -8,7 +16,14 @@ app.use(express.json());
 
 
 // Rutas
+app.use('/api/auth', authRoute);
+app.use('/api/usuarios', usersRoutes);
 app.use('/api/citas', citaRoutes);
+app.use('/api/historial', historialRoutes);
+app.use('/api/animales', animalsRoutes);
+app.use('/api/tratamientos', tratamientoRoutes);
+app.use('/api/reportes', reporteRoutes);
+
 
 // Iniciar el servidor
 (async () => {
